@@ -70,4 +70,18 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item));
         });
     }
+
+    public function testWhereBetween()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table('categories')
+            ->whereBetween('created_at', ['2020-01-01 00:00:00', '2020-01-02 00:00:00'])
+            ->get();
+
+        self::assertCount(4, $collection);
+        $collection->each(function ($item){
+            Log::info(json_encode($item));
+        });
+    }
 }
