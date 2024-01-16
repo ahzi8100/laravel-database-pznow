@@ -150,4 +150,13 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item));
         });
     }
+
+    public function testDelete()
+    {
+        $this->insertCategories();
+
+        DB::table('categories')->where('id','=','SMARTPHONE')->delete();
+        $collection = DB::table('categories')->where('id', '=','SMARTPHONE')->get();
+        assertCount(0, $collection);
+    }
 }
