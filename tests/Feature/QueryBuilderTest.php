@@ -110,6 +110,12 @@ class QueryBuilderTest extends TestCase
 
     public function testWhareDate()
     {
+        $this->insertCategories();
 
+        $collection = DB::table('categories')->whereDate('created_at', '2020-01-01')->get();
+        assertCount(4, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
     }
 }
