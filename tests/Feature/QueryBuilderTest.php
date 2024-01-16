@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpParser\Builder;
 use Tests\TestCase;
+use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
 
 class QueryBuilderTest extends TestCase
@@ -94,5 +95,21 @@ class QueryBuilderTest extends TestCase
         $collection->each(function ($item) {
             Log::info(json_encode($item));
         });
+    }
+
+    public function testWhereNull()
+    {
+        $this->insertCategories();
+
+        $collection = DB::table('categories')->whereNull('description')->get();
+        assertCount(4,$collection);
+        $collection->each(function ($item){
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testWhareDate()
+    {
+
     }
 }
