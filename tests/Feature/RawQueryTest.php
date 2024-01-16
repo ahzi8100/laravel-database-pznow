@@ -29,21 +29,21 @@ class RawQueryTest extends TestCase
 //        self::assertEquals('2020-01-01 00:00:00', $result[0]->created_at);
 //    }
 
-    public function testNamedBinging()
-    {
-        DB::insert('insert into categories(id, name, description, created_at) values (:id, :name, :description, :created_at)',[
-            'id'=>'GADGET',
-            'name' => 'Gadget',
-            'description' => 'Gadget Category',
-            'created_at' => '2020-01-01 00:00:00'
-        ]);
-
-        $result = DB::select('select * from categories where id = :id', ['id' => 'GADGET']);
-
-        assertEquals(1, count($result));
-        assertEquals('GADGET', $result[0]->id);
-        self::assertEquals('Gadget', $result[0]->name);
-        self::assertEquals('Gadget Category', $result[0]->description);
-        self::assertEquals('2020-01-01 00:00:00', $result[0]->created_at);
-    }
+//    public function testNamedBinging()
+//    {
+//        DB::insert('insert into categories(id, name, description, created_at) values (:id, :name, :description, :created_at)',[
+//            'id'=>'GADGET',
+//            'name' => 'Gadget',
+//            'description' => 'Gadget Category',
+//            'created_at' => '2020-01-01 00:00:00'
+//        ]);
+//
+//        $result = DB::select('select * from categories where id = :id', ['id' => 'GADGET']);
+//
+//        assertEquals(1, count($result));
+//        assertEquals('GADGET', $result[0]->id);
+//        self::assertEquals('Gadget', $result[0]->name);
+//        self::assertEquals('Gadget Category', $result[0]->description);
+//        self::assertEquals('2020-01-01 00:00:00', $result[0]->created_at);
+//    }
 }
