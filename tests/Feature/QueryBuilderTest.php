@@ -225,10 +225,28 @@ class QueryBuilderTest extends TestCase
         });
     }
 
+    public function insertManyCategories()
+    {
+        for ($i = 0; $i < 100; $i++) {
+            DB::table('categories')->insert([
+                'id' => "CATEGORY-$i",
+                'name' => "Category $i",
+                'created_at' => '2020-10-10 10:10:10'
+            ]);
+        }
+    }
+
     public function testChunk()
     {
-        $this->insertProducts();
+        $this->insertManyCategories();
 
         DB::table('categories')
+            ->orderBy('id')
+            ->chunk(10, function ($categories) {
+                self::assertNotNull($categories);
+                foreach ($categories as $category) {
+                    Log::info(json_encode($category));
+                }
+            });
     }
 }
