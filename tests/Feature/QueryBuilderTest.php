@@ -289,4 +289,68 @@ class QueryBuilderTest extends TestCase
         self::assertEquals(1800000, $collection[0]->min_price);
         assertEquals(2000000, $collection[0]->max_price);
     }
+
+    public function insertProductFood()
+    {
+        DB::table('products')->insert([
+            'id' => 3,
+            'name' => 'Bakso',
+            'category_id' => 'FOOD',
+            'price' => 20000
+        ]);
+
+        DB::table('products')->insert([
+            'id' => 4,
+            'name' => 'Mie Ayam',
+            'category_id' => 'FOOD',
+            'price' => 18000
+        ]);
+    }
+
+    public function testGroupBy()
+    {
+        $this->insertProducts();
+        $this->insertProductFood();
+
+        $collection = DB::table('products')
+            ->select('category_id', DB::raw('count(*) as total_product'))
+            ->groupBy('category_id')
+            ->orderBy('category_id', 'desc')
+            ->get();
+
+        assertCount(2, $collection);
+        assertEquals('SMARTPHONE', $collection[0]->category_id);
+        assertEquals('FOOD', $collection[1]->category_id);
+        assertEquals(2, $collection[0]->total_product);
+        assertEquals(2, $collection[1]->total_product);
+    }
+
+    public function testHaving()
+    {
+        $this->insertProducts();
+        $this->insertProductFood();
+
+        $collection = DB::table('products')
+            ->select('category_id', DB::raw('count(*) as total_product'))
+            ->groupBy('category_id')
+            ->orderBy('category_id', 'desc')
+            ->having(DB::raw('count(*)'), '>', 2)
+            ->get();
+
+        assertCount(0, $collection);
+    }
+
+    public function testLocking()
+    {
+        $this->insertProducts();
+
+        DB::transaction(function () {
+            $collection = DB::table('products')
+                ->where('id', '=', '1')
+                ->lockForUpdate()
+                ->get();
+
+            assertCount(1, $collection);
+        });
+    }
 }
