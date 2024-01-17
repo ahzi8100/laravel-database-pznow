@@ -353,4 +353,23 @@ class QueryBuilderTest extends TestCase
             assertCount(1, $collection);
         });
     }
+
+    public function testPaginate()
+    {
+        $this->insertCategories();
+
+        $paginate = DB::table('categories')->paginate(2, page: 2);
+
+        assertEquals(2, $paginate->currentPage());
+        assertEquals(2, $paginate->perPage());
+        assertEquals(2, $paginate->lastPage());
+        assertEquals(4, $paginate->total());
+
+        $collection = $paginate->items();
+        assertCount(2, $collection);
+
+        foreach ($collection as $item) {
+            Log::info(json_encode($item));
+        }
+    }
 }
