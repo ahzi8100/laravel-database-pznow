@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use PhpParser\Builder;
+//use PhpParser\Builder;
 use Tests\TestCase;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
@@ -14,6 +15,7 @@ class QueryBuilderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        DB::delete('delete from products');
         DB::delete('DELETE FROM categories');
     }
 
@@ -158,5 +160,75 @@ class QueryBuilderTest extends TestCase
         DB::table('categories')->where('id','=','SMARTPHONE')->delete();
         $collection = DB::table('categories')->where('id', '=','SMARTPHONE')->get();
         assertCount(0, $collection);
+    }
+
+    public function insertProducts()
+    {
+        $this->insertCategories();
+
+        DB::table('products')->insert([
+            'id' => 1,
+            'name' => 'Iphone 14',
+            'category_id' => 'SMARTPHONE',
+            'price' => 2000000
+        ]);
+
+        DB::table('products')->insert([
+            'id' => 2,
+            'name' => 'Samsung Galaxy',
+            'category_id' => 'SMARTPHONE',
+            'price' => 1800000
+        ]);
+    }
+    public function testJoin()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->select('products.id', 'products.name', 'products.price', 'categories.name as category_name')
+            ->get();
+
+        assertCount(2, $collection);
+        $collection->each(function ($item){
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testOrdering()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table('products')
+            ->orderBy('price','desc')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        assertCount(2, $collection);
+        $collection->each(function ($item){
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testPaging()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table('categories')
+            ->skip(2)
+            ->take(2)
+            ->get();
+
+        assertCount(2,$collection);
+        $collection->each(function ($item){
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testChunk()
+    {
+        $this->insertProducts();
+
+        DB::table('categories')
     }
 }
